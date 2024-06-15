@@ -25,10 +25,10 @@ const mailGenerator = new Mailgen({
 });
 
 // Function to generate email content
-const generateEmail = () => {
+const generateEmail = (user_name) => {
   const email = {
     body: {
-      name: "User",
+      name: user_name,
       intro: "Jangan Lupa Hari ini Catat Pemasukan dan Pengeluaranmu...",
       outro: "Have a nice day!",
     },
@@ -38,8 +38,8 @@ const generateEmail = () => {
 };
 
 // Function to send email
-const sendEmail = async (to) => {
-  const emailBody = generateEmail();
+const sendEmail = async (to, name) => {
+  const emailBody = generateEmail(name);
 
   const mailOptions = {
     from: process.env.HOST_MAIL,
@@ -57,15 +57,18 @@ const sendEmail = async (to) => {
 };
 
 // Cloud Function to send emails to all users
-app.get("/send-emails", async (req, res) => {
+app.get("/", async (req, res) => {
   try {
     const users = await prisma.user.findMany({
       select: {
         email: true,
+        username: true,
       },
     });
 
-    const emailPromises = users.map((user) => sendEmail(user.email));
+    const emailPromises = users.map((user) =>
+      sendEmail(user.email, user.username)
+    );
     await Promise.all(emailPromises);
 
     res.status(200).send("Emails sent successfully");

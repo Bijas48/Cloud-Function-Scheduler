@@ -27,12 +27,13 @@ model User {
 }
 
 model OTP {
-  id        String   @id @default(uuid())
-  email     String
-  otp       String
-  createdAt DateTime @default(now())
-  User      User?    @relation(fields: [userId], references: [id])
-  userId    String?
+  id           String   @id @default(uuid())
+  email        String
+  otp          String
+  createdAt    DateTime @default(now())
+  User         User?    @relation(fields: [userId], references: [id])
+  userId       String?
+  tempUserData Json?
 }
 
 model EducationContent {
